@@ -1,71 +1,72 @@
-class ChessBoard {
-    constructor (boardArray = [], knights = []) {
-        this.boardArray = boardArray;
-        this.knights = knights;
-        let alphabet = 'ABCDEFGH';
+function knightMoves(start, end) {
+    // Define knight's moves relative to its position
+    const knightMoves = [
+      [-2, -1],
+      [-1, -2],
+      [1, -2],
+      [2, -1],
+      [2, 1],
+      [1, 2],
+      [-1, 2],
+      [-2, 1],
+    ];
+  
+    // Function to check if a position is within the 8x8 board
+    function isValidPosition(pos) {
+      const [x, y] = pos;
+      return x >= 0 && x < 8 && y >= 0 && y < 8;
     }
-
-    addKnight (initPos) { // creates a knight on the chessboard at the deside location, and creates a tree for all possible moves
-        const newKnight = new Knight(initPos);
-        newKnight.root = new Node(initPos);
-        this.knights.push(newKnight);
+  
+    // BFS initialization
+    const queue = [[start]];
+    const visited = new Set();
+    visited.add(start.toString());
+  
+    while (queue.length > 0) {
+      const path = queue.shift();
+      const [currX, currY] = path[path.length - 1];
+  
+      // If we reach the end position, return the path
+      if (currX === end[0] && currY === end[1]) {
+        return path;
+      }
+  
+      // Explore all possible knight moves
+      for (let move of knightMoves) {
+        const [moveX, moveY] = move;
+        const newX = currX + moveX;
+        const newY = currY + moveY;
+        const newPosition = [newX, newY];
+  
+        if (
+          isValidPosition(newPosition) &&
+          !visited.has(newPosition.toString())
+        ) {
+          visited.add(newPosition.toString());
+          const newPath = [...path, newPosition];
+          queue.push(newPath);
+        }
+      }
     }
-
-    knightMoves (initPos, finalPos) {
-        let root = new Node(initPos);
-        root.nextMoves = this.createPossibleMoves(root);
-        root.nextMoves.forEach(element => {
-            element.nextMoves = this.createPossibleMoves(element);
-        });
-    }
-
-
-
-    createPossibleMoves (root) {
-
-        let moveArray = []; 
-        let possibleMovesArray = []; //this array should have nodes
-        const currPos = root.currPos;
-    
-        moveArray.push([currPos[0]+1, currPos[1]+2]);
-        moveArray.push([currPos[0]+1, currPos[1]-2]);
-        moveArray.push([currPos[0]-1, currPos[1]+2]);
-        moveArray.push([currPos[0]-1, currPos[1]-2]);
-        moveArray.push([currPos[0]+2, currPos[1]+1]);
-        moveArray.push([currPos[0]+2, currPos[1]-1]);
-        moveArray.push([currPos[0]-2, currPos[1]+1]);
-        moveArray.push([currPos[0]-2, currPos[1]-1]);
-    
-        for (let i = 0; i < 8; i++) { //the loop checks if there are any negative coordinates in the move array
-            let element = moveArray[i];
-            if (element[0] < 0 || element[1] < 0 || element[0] > 8|| element[1] > 8) {
-                continue;
-            }
-            else {
-                possibleMovesArray.push(new Node(element));
-            }
-        }    
-        return possibleMovesArray;
+  
+    // If no path found (should not reach here given problem constraints)
+    return null;
+  }
+  
+  // Function to print the result in the required format
+  function printKnightMoves(start, end) {
+    const path = knightMoves(start, end);
+    if (path) {
+      console.log(`You made it in ${path.length - 1} moves! Here's your path:`);
+      path.forEach((step) => console.log(step));
+    } else {
+      console.log("No path found.");
     }
 }
-
-class Node {
-    constructor (position, nextMoves = []) { //first parameter is a coordinate, second parameter is an array of nodes
-        this.position = position;
-        this.nextMoves = nextMoves;
-    }
-}
-
-class Knight {
-    constructor (currPos, root) {
-        this.currPos = currPos;
-        this.root = root;
-    }
-
-    
-}
-
-const board1 = new ChessBoard();
-board1.addKnight([0,0]);
-const knight1 = board1.knights[0];
-console.log(knight1);
+  
+  // Examples:
+  printKnightMoves([0, 0], [1, 2]);
+  printKnightMoves([0, 0], [3, 3]);
+  printKnightMoves([3, 3], [0, 0]);
+  printKnightMoves([0, 0], [7, 7]);
+  printKnightMoves([3, 3], [4, 3]);

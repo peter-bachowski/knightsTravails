@@ -62,7 +62,7 @@ function knightMoves(start, end) {
     } else {
       console.log("No path found.");
     }
-}
+  }
   
   // Examples:
   printKnightMoves([0, 0], [1, 2]);
@@ -70,3 +70,4 @@ function knightMoves(start, end) {
   printKnightMoves([3, 3], [0, 0]);
   printKnightMoves([0, 0], [7, 7]);
   printKnightMoves([3, 3], [4, 3]);
+  
